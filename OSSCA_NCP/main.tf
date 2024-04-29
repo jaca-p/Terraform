@@ -22,11 +22,13 @@ resource "ncloud_vpc" "ossca_vpc" {
 resource "ncloud_route_table" "ossca_route_table" {
 	vpc_no = ncloud_vpc.ossca_vpc.id
 	supported_subnet_type = "PRIVATE"
+	name = "private-to-nat-gateway"
 }
 
 resource "ncloud_nat_gateway" "ossca_nat_gw" {
 	vpc_no = ncloud_vpc.ossca_vpc.id
 	zone = "KR-1"
+	subnet_no = ncloud_subnet.public_nat_subnet.id
 }
 
 resource "ncloud_route" "nat_route" {
@@ -37,15 +39,6 @@ resource "ncloud_route" "nat_route" {
 	target_no = ncloud_nat_gateway.ossca_nat_gw.id
 }
 
-resource "ncloud_route_table_association" "route_table_subet-1" {
-	route_table_no = ncloud_route_table.ossca_route_table.id
-	subnet_no = ncloud_subnet.private_general_subnet-1.id
-}
-
-resource "ncloud_route_table_association" "route_table_subet-2" {
-	route_table_no = ncloud_route_table.ossca_route_table.id
-	subnet_no = ncloud_subnet.private_general_subnet-2.id
-}
 resource "ncloud_subnet" "public_general_subnet" {
 	vpc_no = ncloud_vpc.ossca_vpc.id
 	subnet = "10.0.1.0/24"
